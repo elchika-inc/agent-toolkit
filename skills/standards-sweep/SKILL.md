@@ -47,7 +47,7 @@ Action は 2026-08-15 に Agent Inbox Hub へ移行済み。`.docs/actions/` へ
 
 `actionctl` = agent-inbox-hub の `apps/actionctl`（`~/.local/bin/actionctl`）。`~/.agents/shared-state/bin/actionctl`（旧 Python CLI）は使わない。
 
-設計の正本は `elchika-inc/agent-inbox-hub` の `docs/superpowers/specs/2026-08-15-person-box-addressing-design.md`。
+設計の正本は `elchika-inc/agent-inbox-hub` の `.docs/plans/2026-08-15-person-box-addressing-design.md`。
 
 ## §4 Brain（正本: shared-state README）
 

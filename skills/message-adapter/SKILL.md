@@ -152,6 +152,6 @@ grep -n '<用途固有のキー名>' <配送層のファイル>   # 0 件であ�
 
 ## 参照
 
-- 対称性と層分けの設計: `elchika-inc/agent-inbox-hub` の `docs/superpowers/specs/2026-08-15-actionctl-plugin-design.md`
-- 発行側アダプタの方針: 同 `docs/superpowers/specs/2026-08-09-agent-inbox-hub-design.md` §7
-- 配送表現（封筒）の契約: 同 `docs/superpowers/specs/2026-08-14-delivered-message-design.md`
+- 対称性と層分けの設計: `elchika-inc/agent-inbox-hub` の `.docs/plans/2026-08-15-actionctl-plugin-design.md`
+- 発行側アダプタの方針: 同 `.docs/plans/2026-08-09-agent-inbox-hub-design.md` §7
+- 配送表現（封筒）の契約: 同 `.docs/plans/2026-08-14-delivered-message-design.md`
