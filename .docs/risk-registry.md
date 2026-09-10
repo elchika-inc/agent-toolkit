@@ -23,7 +23,7 @@
 
 ## RISK-001: 旧 human-v1 マージ記録の監査判定不能
 
-- **Status**: accepted
+- **Status**: resolved
 - **Date**: 2026-09-10
 - **Confidence**: 100%
 - **Discovered**: standards rev.90 の準拠監査（2026-09-10、委任元による merged PR の実測）。
@@ -32,9 +32,10 @@
 - **Why accepted**: リポジトリ側の文書修正では過去の版と現在の照合条件の差を解消できず、当時の正当な履歴を書き換えるべきではないため受容する。
 - **Mitigation**: 過去3件の判定不能を現行 PR の承認確認と区別する。新しい PR は現行のマージ記録形式と `merge_policy: human` に従う。
 - **リスクが顕在化する条件**: merged PR 走査が旧版を対象に含め、当時の記録を現行の照合対象だけで不適合と判定する場合。
-- **anchor**: 次回 standards-audit の merged PR 走査で、#44 / #45 / #46 の同じ3件が照合対象外の版として再検出されること。監査出力と PR の実記録を照合する。
-- **Follow-up**: standards 側へ版移行の経過措置を求める Issue を起票済み（司令塔が別途実施）: [elchika-inc/standards#82](https://github.com/elchika-inc/standards/issues/82)。監査側に経過措置が入った時点で3件を再評価する。
-- **Reconciled**: 2026-09-10 `21432bf5d3911e1bb245429a1ee9ce8f5cccba16`（作業開始時の HEAD。外部 PR 記録は委任元の同日実測と突合）。
+- **anchor**: なし（resolved のため accepted ではない）。
+- **Follow-up**: 起票済みの [elchika-inc/standards#82](https://github.com/elchika-inc/standards/issues/82) が求めた経過措置は standards rev.92 で実装され、対象3件を再評価した。
+- **Resolved**: 2026-09-10、standards rev.92 の [DOCS_OPS.md §5「退役版の監査」](https://github.com/elchika-inc/standards/blob/a8ce05d417059a0580ed29c802f125de6d02ea3f/DOCS_OPS.md#5-ブランチ戦略) により解消。委任元の同日実測で、#44 のマージ日 `2026-08-22T12:08:06Z`、#45 の `2026-08-22T12:12:44Z`、#46 の `2026-08-22T16:37:22Z` はいずれも `human-v1` の有効期間（2026-08-17〜2026-08-26、両端を含む）内であり、各 PR の `human-v1` コメントは要求4項目（実装担当識別子・判定時 head・承認した人間・承認の所在）を満たすことを確認した。
+- **Reconciled**: 2026-09-10 `8bc97be846da6c1d6ac4b5523fd64c84af7bfb60`（作業開始時の main。外部 PR 記録は委任元の同日実測と突合）。
 
 ---
 
