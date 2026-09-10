@@ -1,6 +1,6 @@
 {
   "name": "elchika-tools",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Local MCP server exposing 34 Elchika Tools utilities (text, encode, format, crypto, generate). All processing happens locally — no data leaves your machine.",
   "author": {
     "name": "naoto24kawa",

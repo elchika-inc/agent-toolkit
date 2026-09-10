@@ -35,3 +35,18 @@
 - **anchor**: 次回 standards-audit の merged PR 走査で、#44 / #45 / #46 の同じ3件が照合対象外の版として再検出されること。監査出力と PR の実記録を照合する。
 - **Follow-up**: standards 側へ版移行の経過措置を求める Issue を起票済み（司令塔が別途実施）: [elchika-inc/standards#82](https://github.com/elchika-inc/standards/issues/82)。監査側に経過措置が入った時点で3件を再評価する。
 - **Reconciled**: 2026-09-10 `21432bf5d3911e1bb245429a1ee9ce8f5cccba16`（作業開始時の HEAD。外部 PR 記録は委任元の同日実測と突合）。
+
+---
+
+## RISK-002: パッケージマネージャに npm を継続使用
+
+- **Status**: accepted
+- **Date**: 2026-09-10
+- **Confidence**: 100%
+- **Discovered**: standards rev.90 の準拠監査と、委任元によるプラグイン起動コマンドの実測。
+- **Location**: `plugins/elchika-tools/.mcp.json`、`plugins/elchika-tools/mcp-server/package-lock.json`。
+- **Description**: standards `PROJECT_RULES.md` はパッケージマネージャに pnpm を SHOULD としているが、この MCP サーバーは npm を使用している。
+- **Why accepted**: `.mcp.json` の起動コマンドはプラグイン利用者のマシンで `npm install --include=dev --silent` を実行する。pnpm への移行は利用者へ pnpm の導入を要求し、配布物を起動できない環境を生むため、npm を継続する。lockfile のコミットという MUST は `package-lock.json` で満たしている。
+- **Mitigation**: `package-lock.json` を維持し、開発・CI では `npm ci` で依存を再現する。
+- **anchor**: 人間の PR レビュアーが `plugins/elchika-tools/.mcp.json` の差分を確認し、起動コマンドが `npm install` 以外へ変わったことを検知する。その変更で pnpm 導入を阻む前提が消えた場合、この受容を再評価する。
+- **Reconciled**: 2026-09-10 `81ed983ac7ecd4606e5454618cb62743444442fb` の `.mcp.json` と `package-lock.json` を照合。
