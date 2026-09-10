@@ -24,7 +24,7 @@
 - MCP サーバー: TypeScript / Node.js / npm、MCP SDK + Zod、テストは Vitest。Web UI と本番デプロイ環境は持たない。
 - standards_version: 2026-09-09 (rev.90)
 - branch_policy: unprotected — branch protection / ruleset をいずれも有効化していない（2026-09-10 実測: protection 404・rulesets 空配列）。保護を有効にする SHOULD から外れるが、エージェントが `main` へ直接 push しない MUST を運用規律として担保する。
-- merge_policy: human — owner `elchika-inc` の既定 `auto-on-green` と異なる理由は、PR に check が1つも存在せず、現構成では DOCS_OPS §5 条件1を恒久的に満たせないため。マージは人間の承認を経る。
+- merge_policy: human — owner 既定（`auto-on-green`）と異なる値を選ぶ理由は、`auto-on-green` が `main` push を起点とする deploy を人間の確認なしに起動させる交換であり、この交換を受け入れるかは CI の有無とは別に判断するため。現時点では全 PR を人間が承認する。
 
 ## プロジェクトドキュメント
 
@@ -39,13 +39,14 @@
 
 - dev: N/A（Web UI・開発サーバーなし。MCP のローカル起動は `npm --prefix plugins/elchika-tools/mcp-server start`）。
 - test: `npm --prefix plugins/elchika-tools/mcp-server test`（Vitest。事前に同ディレクトリで `npm ci`）。
-- check: N/A（リポジトリ共通の lint・型検査コマンドは未定義）。
+- check: `npx --yes @biomejs/biome@2.3.10 check .`（MCP サーバー配下の lint・整形検査。CI でも同じ版を実行）。
 - deploy: N/A（本番デプロイ先と deploy コマンドなし。スキル・プラグインの配布は「重要な設計原則」に従う）。
 
 ## Architecture
 
 | ディレクトリ・ファイル | 責務 |
 |---|---|
+| `.github/workflows/ci.yml` | MCP サーバーのテストと Biome 検査 |
 | `AGENTS.md` | このリポジトリの継続的な要求事項を置く共通契約の正本（ルール文書） |
 | `.claude-plugin/marketplace.json` | マーケットプレース定義。`plugins/` の配布定義の正本 |
 | `skills/` | 配布物（ルール文書ではない）。エージェント横断スキルの正本。skills CLI が `skills/<name>/SKILL.md` と `references/` 等を発見する |

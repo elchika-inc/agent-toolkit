@@ -95,22 +95,6 @@ function shouldIndentAfterTag(tag: string): boolean {
   return !VOID_ELEMENTS.has(name) && !tag.endsWith("/>") && INDENT_AFTER.has(name);
 }
 
-function processHtmlPart(part: string, level: number, indent: string, lines: string[]): number {
-  const t = part.trim();
-  if (!t) return level;
-  if (t.startsWith("</")) {
-    const nl = Math.max(0, level - 1);
-    lines.push(indent.repeat(nl) + t);
-    return nl;
-  }
-  if (t.startsWith("<")) {
-    lines.push(indent.repeat(level) + t);
-    return shouldIndentAfterTag(t) ? level + 1 : level;
-  }
-  lines.push(indent.repeat(level) + t);
-  return level;
-}
-
 export function formatHtml(html: string, indentSize = 2): string {
   const trimmed = html.trim();
   if (!trimmed) return "";

@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "naoto24kawa-claude-plugins",
-  "version": "7.5.0",
+  "version": "7.5.1",
   "description": "Agent toolkit: cross-agent skills (skills.sh compatible) plus Claude Code plugins — development process infrastructure and exploratory QA testing",
   "owner": {
     "name": "naoto24kawa",
@@ -22,7 +22,7 @@
     {
       "name": "elchika-tools",
       "description": "Local MCP server exposing 34 Elchika Tools utilities. Text transform, encode/decode, format, crypto, and generate tools — all running locally, no data leaves your machine.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "naoto24kawa",
         "email": "naoto24kawa@gmail.com"

@@ -1,6 +1,8 @@
 # agent-toolkit
 
 [![standards](https://img.shields.io/badge/standards-2026--09--09_(rev.90)-blue)](https://github.com/elchika-inc/standards/blob/main/CHANGELOG.md)
+[![CI](https://github.com/elchika-inc/agent-toolkit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/elchika-inc/agent-toolkit/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 エージェント横断のスキル集（[skills.sh](https://www.skills.sh/) 互換）＋ Claude Code プラグインマーケットプレース。
 レビュー・検証・設計・運用の道具を共通の正本で保守し、対応するエージェントへ配布する。
@@ -74,7 +76,7 @@ npx skills update -g
 
 > マーケットプレース名は既存インストールとの互換性維持のため `naoto24kawa-claude-plugins` のまま。
 
-### dev-tools (v1.7.0)
+### dev-tools (v1.14.0)
 
 開発プロセス基盤のオールインワン。
 
@@ -88,7 +90,7 @@ npx skills update -g
 
 > v1.7.0 で spec（文書生成の9エージェントと専用 references）を撤去した。スキル本体は 2026-06-13 に削除済みで、エージェントは起動経路を失ったまま残置されていた。
 
-### elchika-tools (v1.0.0)
+### elchika-tools (v1.0.1)
 
 ローカル MCP サーバー。テキスト変換・エンコード/デコード・フォーマット・暗号・生成系の34ユーティリティ。データは外部送信されない。
 
@@ -106,7 +108,7 @@ npm --prefix plugins/elchika-tools/mcp-server ci
 |---------|------|
 | dev: N/A | Web UI・開発サーバーなし。MCP のローカル起動は `npm --prefix plugins/elchika-tools/mcp-server start` |
 | `npm --prefix plugins/elchika-tools/mcp-server test` | test: Vitest による MCP サーバーのテスト |
-| check: N/A | リポジトリ共通の lint・型検査コマンドは未定義 |
+| `npx --yes @biomejs/biome@2.3.10 check .` | check: MCP サーバー配下を Biome で検査 |
 | deploy: N/A | 本番デプロイ先と deploy コマンドなし。スキル・プラグインは各配布 CLI で更新 |
 
 構成概要:
@@ -119,6 +121,10 @@ npm --prefix plugins/elchika-tools/mcp-server ci
 
 変更時の同期先・version 更新・配布先の実体確認は [AGENTS.md](AGENTS.md)「重要な設計原則」、完了条件は [ゴールシート](.docs/PROJECT_GOAL.md#donecriteria) を参照する。
 
+## Contributing
+
+Issue・PR の提出と編集・検証の案内は [CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。
+
 ## ライセンス
 
-MIT
+[MIT License](LICENSE)
