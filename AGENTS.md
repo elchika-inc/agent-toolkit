@@ -23,7 +23,7 @@
 - 配布物: Markdown + YAML frontmatter のスキル、JSON のプラグイン定義、シェルの hooks。
 - MCP サーバー: TypeScript / Node.js / npm、MCP SDK + Zod、テストは Vitest。Web UI と本番デプロイ環境は持たない。
 - standards_version: 2026-09-09 (rev.90)
-- branch_policy: unprotected — branch protection / ruleset をいずれも有効化していない（2026-09-10 実測: protection 404・rulesets 空配列）。保護を有効にする SHOULD から外れるが、エージェントが `main` へ直接 push しない MUST を運用規律として担保する。
+- branch_policy: protected — `main` は PR 必須で、直 push の bypass は無い（2026-09-10 実測: ruleset `22766205` は active・`bypass_actors` は 0 件・required status check は `Biome / Test`）。
 - merge_policy: human — owner 既定（`auto-on-green`）と異なる値を選ぶ理由は、`auto-on-green` が `main` push を起点とする deploy を人間の確認なしに起動させる交換であり、この交換を受け入れるかは CI の有無とは別に判断するため。現時点では全 PR を人間が承認する。
 
 ## プロジェクトドキュメント
