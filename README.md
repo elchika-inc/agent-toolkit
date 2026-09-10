@@ -1,6 +1,6 @@
 # agent-toolkit
 
-[![standards](https://img.shields.io/badge/standards-2026--09--09_(rev.90)-blue)](https://github.com/elchika-inc/standards/blob/main/CHANGELOG.md)
+[![standards](https://img.shields.io/badge/standards-2026--09--10_(rev.92)-blue)](https://github.com/elchika-inc/standards/blob/main/CHANGELOG.md)
 [![CI](https://github.com/elchika-inc/agent-toolkit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/elchika-inc/agent-toolkit/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
