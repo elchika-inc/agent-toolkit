@@ -1,6 +1,6 @@
 export function encodeBase64(text: string): string {
   const bytes = new TextEncoder().encode(text);
-  let binary = '';
+  let binary = "";
   for (const byte of bytes) binary += String.fromCharCode(byte);
   return btoa(binary);
 }
@@ -13,18 +13,29 @@ export function decodeBase64(encoded: string): string {
 }
 
 const NAMED_ENTITIES: Record<string, string> = {
-  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;',
-  ' ': '&nbsp;', '©': '&copy;', '®': '&reg;', '™': '&trade;',
-  '…': '&hellip;', '—': '&mdash;', '–': '&ndash;',
-  '‘': '&lsquo;', '’': '&rsquo;', '“': '&ldquo;', '”': '&rdquo;',
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#039;",
+  " ": "&nbsp;",
+  "©": "&copy;",
+  "®": "&reg;",
+  "™": "&trade;",
+  "…": "&hellip;",
+  "—": "&mdash;",
+  "–": "&ndash;",
+  "‘": "&lsquo;",
+  "’": "&rsquo;",
+  "“": "&ldquo;",
+  "”": "&rdquo;",
 };
 
 const REVERSE_NAMED: Record<string, string> = {};
 for (const [char, entity] of Object.entries(NAMED_ENTITIES)) REVERSE_NAMED[entity] = char;
 
 export function encodeHTMLEntities(text: string): string {
-  return text.replace(/[&<>"' ©®™…—–‘’“”]/g,
-    (char) => NAMED_ENTITIES[char] ?? char);
+  return text.replace(/[&<>"' ©®™…—–‘’“”]/g, (char) => NAMED_ENTITIES[char] ?? char);
 }
 
 export function decodeHTMLEntities(text: string): string {
@@ -36,13 +47,15 @@ export function decodeHTMLEntities(text: string): string {
 
 export function uuencode(input: string): string {
   const bytes = new TextEncoder().encode(input);
-  const lines: string[] = ['begin 644 data'];
+  const lines: string[] = ["begin 644 data"];
   for (let offset = 0; offset < bytes.length; offset += 45) {
     const chunk = bytes.slice(offset, Math.min(offset + 45, bytes.length));
     const len = chunk.length;
     let line = String.fromCharCode(len + 32);
     for (let j = 0; j < chunk.length; j += 3) {
-      const b1 = chunk[j] ?? 0, b2 = chunk[j + 1] ?? 0, b3 = chunk[j + 2] ?? 0;
+      const b1 = chunk[j] ?? 0,
+        b2 = chunk[j + 1] ?? 0,
+        b3 = chunk[j + 2] ?? 0;
       line += String.fromCharCode(((b1 >> 2) & 0x3f) + 32);
       line += String.fromCharCode((((b1 << 4) | (b2 >> 4)) & 0x3f) + 32);
       line += String.fromCharCode((((b2 << 2) | (b3 >> 6)) & 0x3f) + 32);
@@ -50,17 +63,20 @@ export function uuencode(input: string): string {
     }
     lines.push(line);
   }
-  lines.push('`', 'end');
-  return lines.join('\n');
+  lines.push("`", "end");
+  return lines.join("\n");
 }
 
 export function uudecode(input: string): string {
-  const lines = input.split('\n');
+  const lines = input.split("\n");
   const allBytes: number[] = [];
   let started = false;
   for (const line of lines) {
-    if (line.startsWith('begin ')) { started = true; continue; }
-    if (!started || line === '`' || line === 'end' || line.length === 0) continue;
+    if (line.startsWith("begin ")) {
+      started = true;
+      continue;
+    }
+    if (!started || line === "`" || line === "end" || line.length === 0) continue;
     const expectedLen = line.charCodeAt(0) - 32;
     if (expectedLen <= 0) continue;
     const decoded: number[] = [];
