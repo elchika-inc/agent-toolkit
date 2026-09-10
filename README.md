@@ -1,11 +1,35 @@
 # agent-toolkit
 
+[![standards](https://img.shields.io/badge/standards-2026--09--09_(rev.90)-blue)](https://github.com/elchika-inc/standards/blob/main/CHANGELOG.md)
+
 エージェント横断のスキル集（[skills.sh](https://www.skills.sh/) 互換）＋ Claude Code プラグインマーケットプレース。
+レビュー・検証・設計・運用の道具を共通の正本で保守し、対応するエージェントへ配布する。
+standards がルールを持ち、このリポジトリはそれを実行するスキルと、hooks・agents・MCP などのプラグインを提供する。
 
 | 役割 | 対象エージェント | インストール方法 |
 |------|----------------|----------------|
 | **Skills** (`skills/`) | Claude Code, Codex, Cursor ほか [skills CLI](https://github.com/vercel-labs/skills) 対応エージェント | `npx skills add elchika-inc/agent-toolkit -g` |
 | **Plugins** (`plugins/`) | Claude Code 専用（hooks / commands / agents / MCP） | `/plugin marketplace add elchika-inc/agent-toolkit` |
+
+## Getting Started
+
+### 前提条件
+
+- スキルを使うには、Node.js / npm（`npx`）と skills CLI 対応エージェントを用意する。この変更のローカル検証環境は Node.js 24.21.0 / npm 11.19.0。
+- プラグインを使うには、プラグイン機能を利用できる Claude Code を用意する。
+- MCP サーバーの `package.json` は Node.js `>=18.0.0` を宣言する。ただし開発・テストでは lockfile の Vitest / Vite の要件も満たす必要があるため、Node.js 24 系を使用する。
+
+### インストール
+
+```bash
+npx skills add elchika-inc/agent-toolkit -g
+```
+
+プラグインの追加コマンドは後述の「Plugins（Claude Code 専用）」を参照する。
+
+### クイックスタート
+
+インストール後、対応エージェントへ「変更したファイルを lens-review-cycle でレビューして」と依頼する。スキルが見つからない場合は `~/.agents/skills/lens-review-cycle/SKILL.md` の実在を確認する。新規スキルの追加には上記の `skills add`、既存スキルの更新には「更新の反映」の `skills update` を使う。
 
 ## Skills
 
@@ -67,6 +91,33 @@ npx skills update -g
 ### elchika-tools (v1.0.0)
 
 ローカル MCP サーバー。テキスト変換・エンコード/デコード・フォーマット・暗号・生成系の34ユーティリティ。データは外部送信されない。
+
+## Development
+
+リポジトリ未取得の場合は、任意の作業ディレクトリから次の clone と cd を実行する。依存のインストールとコマンドテーブルは、取得したリポジトリのルートで実行する。
+
+```bash
+git clone https://github.com/elchika-inc/agent-toolkit.git
+cd agent-toolkit
+npm --prefix plugins/elchika-tools/mcp-server ci
+```
+
+| コマンド | 内容 |
+|---------|------|
+| dev: N/A | Web UI・開発サーバーなし。MCP のローカル起動は `npm --prefix plugins/elchika-tools/mcp-server start` |
+| `npm --prefix plugins/elchika-tools/mcp-server test` | test: Vitest による MCP サーバーのテスト |
+| check: N/A | リポジトリ共通の lint・型検査コマンドは未定義 |
+| deploy: N/A | 本番デプロイ先と deploy コマンドなし。スキル・プラグインは各配布 CLI で更新 |
+
+構成概要:
+
+- `skills/`: エージェント横断スキルの正本。
+- `plugins/dev-tools/`: agents / commands / hooks と同期スキル。
+- `plugins/elchika-tools/mcp-server/`: TypeScript 製のローカル MCP サーバー。
+- `.claude-plugin/marketplace.json`: プラグイン配布定義。
+- `.docs/`: ゴールシート、設計・実装計画、アクションキュー、レビュー、リスクレコード。
+
+変更時の同期先・version 更新・配布先の実体確認は [AGENTS.md](AGENTS.md)「重要な設計原則」、完了条件は [ゴールシート](.docs/PROJECT_GOAL.md#donecriteria) を参照する。
 
 ## ライセンス
 
