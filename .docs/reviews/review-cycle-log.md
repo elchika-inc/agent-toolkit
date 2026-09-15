@@ -35,3 +35,16 @@
   - なし
 - **optional**: Domain 1件（R1・R2で継続）。marketplace.jsonのdev-tools説明文へproduct-design-lensを列挙する案は、明示要件・整合性契約の対象外で機能上の破綻も無いため変更しない。
 <!-- review-cycle:end task_8c06784a5283-ctx_ef6dfd530166 -->
+
+<!-- review-cycle:start 2026-09-15-standards-templates-drift -->
+## 2026-09-15 standards と templates の相互参照検査スキル
+- **Cycle ID**: 2026-09-15-standards-templates-drift
+- **対象 HEAD**: 9b537ac527e96555a1fe8517293133abf00e8ea1（未コミット実装 29 ファイル）
+- **総ラウンド数**: 1
+- **終了理由**: 初回から全 7 レンズの flag 0、Key Commands の check / test は各 exit 0
+- **レンズ別 flag 件数**: Fresh Eyes 0 / Security 0 / Core Logic 0 / Tests 0 / Domain 0 / Ambiguity Hunter 0 / Altitude Checker 0
+- **確定した偽陽性**: なし
+- **optional**: 2 件（fixture 共通化、参照先文書不在ケース）。詳細と原文は [サイクル記録](cycles/2026-09-15-standards-templates-drift.md) を参照。
+- **実施方法**: Orca 起動が consumer_fenced で失敗したため、委任仕様 §5 に従い tools / MCP / hooks 無効の fresh context レビュアー 1 名を使用。
+- **記録根拠**: [設計「検証」](../plans/standards-templates-drift-skill-design.md#検証)と委任仕様 §2.7 に従い、本索引にも追加した。
+<!-- review-cycle:end 2026-09-15-standards-templates-drift -->
