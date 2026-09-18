@@ -1,7 +1,7 @@
 ---
 name: lens-review-cycle
 description: 'This skill should be used when the user asks to "レンズレビュー", "lens review cycle", "専門家レビュー", "expert review cycle", "5人の専門家にレビューしてもらおう", "指摘が0になるまでレビュー", "レビューサイクルを回す", "繰り返しレビュー", or the legacy phrases "parallel review cycle" / "専門家並行レビュー" — to run multiple autonomous review rounds until all findings reach zero, without between-round confirmation. One reviewer applies 5 lenses sequentially; parallel agents only when the user explicitly asks. For prose targets (CLAUDE.md, .docs/plans, SKILL.md, README, design docs), also use a 6th "Ambiguity Hunter" for underspecification and a 7th "Altitude Checker" for detail-level overfit. Triggers also: "仕様の曖昧さをチェック", "ルールの曖昧さ", "未明文化を洗い出す", "ambiguity check", "overfit チェック", "過剰実装チェック", "altitude check". 構想段階の判断訂正には product-design-lens を使う。'
-allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, Agent, mcp__plugin_ts-review-graph_ts-review-graph__get_minimal_context]
+allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, Agent, mcp__code-review-graph__build_or_update_graph_tool, mcp__code-review-graph__get_minimal_context_tool]
 ---
 
 # Lens Review Cycle
@@ -72,9 +72,9 @@ REVIEW_DIR="/tmp/review-cycle-${_wt}"
 
 ## ステップ 1.5: 最小コンテキストの取得（任意）
 
-レビュー対象にコードが含まれ、対象リポジトリに `.ts-review-graph/graph.db` がある場合だけ、`get_minimal_context(changed_files, "review")` を1回呼ぶ。結果は全 specialist に「まず読むべき起点」として渡すが、読む範囲の制約にはしない。
+レビュー対象にコードが含まれる場合だけ、全 specialist のディスパッチ前に、① `mcp__code-review-graph__build_or_update_graph_tool()`（引数なしで graph が無ければ作り、あれば増分更新）、成功したら② `mcp__code-review-graph__get_minimal_context_tool(task="review", changed_files=[レビュー対象のリポジトリ相対パス])` の順で各1回呼ぶ。②の `status` が `"ok"` なら `summary`・`risk`・`communities`・`flows_affected` を全 specialist に「まず読むべき起点（code-review-graph）」として渡すが、読む範囲の制約にはしない。`next_tool_suggestions` は渡さない。
 
-グラフが無い、stale で拒否された、または MCP サーバーが未接続の場合は理由を1行記録し、**現行のレビュー動作を継続する**。文章仕様のみが対象なら呼び出さない。呼び出し形式とフォールバックは `references/minimal-context-feeder.md` を参照する。
+①が失敗した、②の `status` が `"ok"` でない、または MCP サーバーが未接続・呼び出しに失敗した場合は結果を使わず、理由を1行記録し、**現行のレビュー動作を継続する**。この場で `full_rebuild=true` を指定したり、レビューを停止したりしない。文章仕様のみが対象なら呼び出さない。呼び出し形式とフォールバックは `references/minimal-context-feeder.md` を参照する。
 
 ## ステップ 2: レビュアー 1 名にレンズを順に当てさせる
 
@@ -275,7 +275,7 @@ Fresh Eyes の独立性だけは別人格に依存していたので、「最初
 - **`references/specialist-roles.md`** — 5 ロールのフォーカスエリアとプロンプトテンプレート
 - **`references/fp-registry-format.md`** — FP レジストリのエントリフォーマット・照合ルール・前回ログからの carry-over
 - **`references/durable-state.md`** — `REVIEW_DIR` の生成と安全検査・state の構造と再開判定・findings ファイルの有効性
-- **`references/minimal-context-feeder.md`** — ts-review-graph の起動条件・呼び出し・fail-open フォールバック
+- **`references/minimal-context-feeder.md`** — code-review-graph の起動条件・2 段呼び出し・fail-open フォールバック
 - **`references/cycle-log-format.md`** — サイクル横断ログの形式・ファイル書込規則・最新エントリの選択
 - **`references/ambiguity-hunter.md`** — #6 Ambiguity Hunter（文章仕様の曖昧さ）の7分類・出力・明文化案・起動条件
 - **`references/altitude-checker.md`** — #7 Altitude Checker（詳細レベル overfit）の5分類・出力・移設案・#6 との裁定
