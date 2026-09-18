@@ -4,10 +4,7 @@
 
 ## 起動条件
 
-次を両方満たす場合だけ起動する。
-
-1. 対象ファイルにコードが1つ以上含まれる。
-2. 対象リポジトリのルートに `.code-review-graph/graph.db` が存在する。
+対象ファイルにコードが1つ以上含まれる場合だけ起動する。
 
 文章仕様だけをレビューする場合はスキップする。
 
@@ -15,7 +12,7 @@
 
 全 specialist のディスパッチ前に、user スコープの MCP サーバー `code-review-graph` のツールを①②の順で各1回だけ呼ぶ。①が失敗したら②は呼ばず、fail-open フォールバックへ進む。
 
-① 既存 graph を増分更新する。引数は指定しない（`full_rebuild=False`）。
+① graph が無ければ作り、あれば増分更新する。引数は指定しない（`full_rebuild=False`）。graph は `<repo>/.code-review-graph/graph.db` に作られ、同ディレクトリの `.gitignore` により git には現れない。
 
 ```text
 mcp__code-review-graph__build_or_update_graph_tool()
@@ -47,16 +44,15 @@ mcp__code-review-graph__get_minimal_context_tool(
 
 次の場合は呼び出し結果を使わず、理由を1行記録して現行のレビュー動作を継続する。
 
-- `.code-review-graph/graph.db` が無い
-- ①の増分更新が失敗した
+- ①の構築・更新が失敗した
 - ②の `status` が `"ok"` でない（`not_ready` の `reason` が `missing_graph`・`empty_graph`・`stale_graph` のいずれでも）
-- MCP サーバーが未接続またはツール呼び出しに失敗した
+- MCP サーバーが未接続
+- ツール呼び出しに失敗した
 
 記録例:
 
 ```text
-code-review-graph: .code-review-graph/graph.db が無いためスキップ。現行のレビュー動作を継続する。
-code-review-graph: 増分更新に失敗したためスキップ。現行のレビュー動作を継続する。
+code-review-graph: 構築・更新に失敗したためスキップ。現行のレビュー動作を継続する。
 code-review-graph: missing_graph のためスキップ。現行のレビュー動作を継続する。
 code-review-graph: empty_graph のためスキップ。現行のレビュー動作を継続する。
 code-review-graph: stale_graph のためスキップ。現行のレビュー動作を継続する。
@@ -64,4 +60,4 @@ code-review-graph: MCP 未接続のためスキップ。現行のレビュー動
 code-review-graph: ツール呼び出しに失敗したためスキップ。現行のレビュー動作を継続する。
 ```
 
-この場でフル build（`full_rebuild=true`）したり、レビューを停止したり、起点を「これ以外は読むな」という制約へ変えたりしない。
+この場で `full_rebuild=true` を指定したり、レビューを停止したり、起点を「これ以外は読むな」という制約へ変えたりしない。

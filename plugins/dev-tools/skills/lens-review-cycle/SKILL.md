@@ -72,9 +72,9 @@ REVIEW_DIR="/tmp/review-cycle-${_wt}"
 
 ## ステップ 1.5: 最小コンテキストの取得（任意）
 
-レビュー対象にコードが含まれ、対象リポジトリのルートに `.code-review-graph/graph.db` がある場合だけ、全 specialist のディスパッチ前に、① `mcp__code-review-graph__build_or_update_graph_tool()`（引数なしで増分更新）、成功したら② `mcp__code-review-graph__get_minimal_context_tool(task="review", changed_files=[レビュー対象のリポジトリ相対パス])` の順で各1回呼ぶ。②の `status` が `"ok"` なら `summary`・`risk`・`communities`・`flows_affected` を全 specialist に「まず読むべき起点（code-review-graph）」として渡すが、読む範囲の制約にはしない。`next_tool_suggestions` は渡さない。
+レビュー対象にコードが含まれる場合だけ、全 specialist のディスパッチ前に、① `mcp__code-review-graph__build_or_update_graph_tool()`（引数なしで graph が無ければ作り、あれば増分更新）、成功したら② `mcp__code-review-graph__get_minimal_context_tool(task="review", changed_files=[レビュー対象のリポジトリ相対パス])` の順で各1回呼ぶ。②の `status` が `"ok"` なら `summary`・`risk`・`communities`・`flows_affected` を全 specialist に「まず読むべき起点（code-review-graph）」として渡すが、読む範囲の制約にはしない。`next_tool_suggestions` は渡さない。
 
-グラフが無い、①が失敗した、②の `status` が `"ok"` でない、または MCP サーバーが未接続・呼び出しに失敗した場合は結果を使わず、理由を1行記録し、**現行のレビュー動作を継続する**。この場でフル build（`full_rebuild=true`）したり、レビューを停止したりしない。文章仕様のみが対象なら呼び出さない。呼び出し形式とフォールバックは `references/minimal-context-feeder.md` を参照する。
+①が失敗した、②の `status` が `"ok"` でない、または MCP サーバーが未接続・呼び出しに失敗した場合は結果を使わず、理由を1行記録し、**現行のレビュー動作を継続する**。この場で `full_rebuild=true` を指定したり、レビューを停止したりしない。文章仕様のみが対象なら呼び出さない。呼び出し形式とフォールバックは `references/minimal-context-feeder.md` を参照する。
 
 ## ステップ 2: レビュアー 1 名にレンズを順に当てさせる
 
