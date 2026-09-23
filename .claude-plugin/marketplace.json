@@ -11,7 +11,7 @@
     {
       "name": "dev-tools",
       "description": "Development toolset. Includes: (1) site-explorer — exploratory QA testing for any web app with automatic bug detection and GitHub Issue registration; (2) lens-review-cycle skill — iterative multi-lens specialist review until zero findings; (3) guardrails — kill-switch / path-allowlist / rate-fuse / audit-log の hook 実装とスキル内パターン集（既定では未配線）; (4) verification-documenter — 網羅列挙→実行→資料化を行う動作検証エージェント（証跡は .docs/reviews/ 配下）.",
-      "version": "1.15.0",
+      "version": "1.16.0",
       "author": {
         "name": "naoto24kawa",
         "email": "naoto24kawa@gmail.com"
