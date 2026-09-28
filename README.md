@@ -49,6 +49,7 @@ npx skills add elchika-inc/agent-toolkit -g
 | `standards-audit` | elchika-inc/standards 準拠チェック |
 | `standards-sweep` | セッション終了前の宙吊り状態の検出（git / 共有状態 / dispatch 済み worker） |
 | `standards-templates-drift` | standards ↔ templates の相互参照（パス・節番号）の実在検査 |
+| `standards-refactor` | 指定範囲の既存コードを、振る舞いをテストで固定してから standards `CODING.md` に沿って書き直す |
 | `documenting-verification` | 動作検証の実行と再現可能な検証資料の作成 |
 | `delegation-spec` | worker へ渡す委任仕様の必須7節と検証チェックリスト |
 | `dreaming` | ルール文書の棚卸し（肥大化・陳腐化・overfit の剪定） |
@@ -77,7 +78,7 @@ npx skills update -g
 
 > マーケットプレース名は既存インストールとの互換性維持のため `naoto24kawa-claude-plugins` のまま。
 
-### dev-tools (v1.16.0)
+### dev-tools (v1.17.0)
 
 開発プロセス基盤のオールインワン。
 
