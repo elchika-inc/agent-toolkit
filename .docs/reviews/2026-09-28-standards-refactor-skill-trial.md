@@ -35,8 +35,8 @@
 
 | コマンド | ベースラインの出力・exit | Task 6 変更後の出力・exit |
 |---|---|---|
-| `npm --prefix plugins/elchika-tools/mcp-server ci` | 143 packages added、144 audited、exit 0 | 最終 HEAD で再実行予定 |
-| `npm --prefix plugins/elchika-tools/mcp-server test` | 1 file / 34 tests passed、exit 0 | 最終 HEAD で再実行予定 |
+| `npm --prefix plugins/elchika-tools/mcp-server ci` | 143 packages added、144 audited、exit 0 | Task 6 Step 4 は再実行指定なし。最終 HEAD の結果は PR 本文「検証」に記録 |
+| `npm --prefix plugins/elchika-tools/mcp-server test` | 1 file / 34 tests passed、exit 0 | Task 6 Step 4 は再実行指定なし。最終 HEAD の結果は PR 本文「検証」に記録 |
 | `npx --yes @biomejs/biome@2.3.10 check .` | 12 files、4 warnings、exit 0 | 同じ12 files・4 warnings、exit 0 |
 | `diff -r skills/lens-review-cycle plugins/dev-tools/skills/lens-review-cycle` | 出力なし、exit 0 | 出力なし、exit 0 |
 | `rg -n '"version"' plugins/dev-tools/.claude-plugin/plugin.json .claude-plugin/marketplace.json` | dev-tools は両方 `1.16.0`、exit 0 | 両方 `1.17.0`、exit 0 |
@@ -172,4 +172,19 @@ GREEN の途中で patch の重複対象指定によるエラーが1回あった
 
 ## 全体レビュー
 
-これから Task 6・Task 7 の変更全体を、計画指定の fresh context CLI でレビューする。試走内の静的レビューは、この全体レビューの代わりにはしない。
+実装計画「レビューと PR の共通手順」に従って、Task 6・Task 7 の変更全体を fresh context CLI でレビューした。試走内の静的レビューとは別に実施した。
+
+| ラウンド | 対象 HEAD | 起動・モデル | 結果 |
+|---|---|---|---|
+| 1 | `231a79c`（`origin/main...HEAD`） | `codex review -c sandbox_mode="read-only" -`、`gpt-6-astra` / `xhigh` | exit 0、flag 0件、optional 0件 |
+
+指示文は heredoc で作成し、正本の4つのレンズ定義・報告規定を連結した同じ呼び出しで起動した。374行あり、抽出失敗の基準を超えている。適用順は Fresh Eyes → Security → Core Logic → Tests → Domain → Ambiguity Hunter → Altitude Checker。追加の3観点と司令塔の裁定も渡した。
+
+レビュアーは固定文言、同期コピー、version、PROJECT_GOAL との整合に加え、GREEN の53テストとテスト凍結を再確認した。MCP 全体テスト・配布・マージはレビュアーの未実施範囲。終了時の MCP session 削除404はログに残り、レビュー自体の exit は0だった。
+
+- 指示文: `/var/folders/hy/dnckvhxs2rjczcpybl990ldw0000gn/T/tmp.pDVgigFXOq/review-prompt.txt`
+- 生ログ: `/tmp/coding-policy-agent-toolkit.SebFZW/review-1.log`
+- `INSPECTION_STATUS`: 初回クリーンラウンドで終了。
+- `ACCEPTED_RISKS`: なし。
+- レビューによる SKILL.md の変更は0件。レビュー後の追加 GREEN 試走は不要。
+- 本節の追記はレビュー結果の記録のみ。最終 HEAD の全検査・CI の結果は PR 本文「検証」に記録する。マージと配布は委任外で、司令塔が別途行う。
