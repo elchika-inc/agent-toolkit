@@ -1,0 +1,14 @@
+{
+  "rules": [
+    "R2"
+  ],
+  "exit": 0,
+  "findings": [],
+  "atReference": [
+    {
+      "rule": "R2",
+      "key": "[data-testid=\"always\"]",
+      "width": 1280
+    }
+  ]
+}

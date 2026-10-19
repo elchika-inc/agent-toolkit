@@ -1,0 +1,15 @@
+{
+  "rules": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+  ],
+  "exit": 0,
+  "findings": [],
+  "unscanned": {
+    "closedShadowRoot": 1,
+    "iframe": 1
+  },
+  "checked": 3
+}

@@ -1,0 +1,13 @@
+{
+  "rules": [
+    "R1"
+  ],
+  "exit": 0,
+  "findings": [
+    {
+      "rule": "R1",
+      "key": "[data-testid=\"wide\"]",
+      "width": 320
+    }
+  ]
+}

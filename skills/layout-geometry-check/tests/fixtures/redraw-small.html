@@ -1,0 +1,5 @@
+<!doctype html>
+<html lang="ja"><meta charset="utf-8"><title>レイアウト検査: redraw-small</title>
+<style>body { margin: 0; } aside { display:none; } @media(max-width:600px) { aside { display:block; } }</style>
+<body><main data-testid="stable"><div>同じ要素</div><div>同じ要素</div><div>同じ要素</div><div>同じ要素</div><div>同じ要素</div><div>同じ要素</div><div>同じ要素</div><div>同じ要素</div><div>同じ要素</div><div>同じ要素</div></main><aside>狭い幅だけ表示</aside>
+<script>addEventListener('resize', () => { if (innerWidth < 600 && !document.querySelector('footer')) { const node=document.createElement('footer'); node.textContent='追加された要素'; document.body.append(node); } });</script></body></html>
