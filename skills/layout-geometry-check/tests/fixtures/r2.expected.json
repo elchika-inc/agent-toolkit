@@ -1,0 +1,13 @@
+{
+  "rules": [
+    "R2"
+  ],
+  "exit": 0,
+  "findings": [
+    {
+      "rule": "R2",
+      "key": "[data-testid=\"clip\"]",
+      "width": 320
+    }
+  ]
+}

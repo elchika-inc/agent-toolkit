@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ja"><meta charset="utf-8"><title>R1 の除外を上限と同時に確かめる</title>
+<style>
+body { margin: 0; }
+.fixed { position: fixed; top: 0; width: 600px; height: 4px; }
+.scroll, .clip { width: 100px; height: 20px; }
+.scroll { overflow-x: auto; } .clip { overflow: hidden; }
+.scroll > div, .clip > div { width: 800px; height: 2px; }
+nav { position: fixed; left: 100%; transform: translateX(100%); width: 300px; height: 30px; }
+[data-testid="wide"] { width: 100px; height: 40px; }
+@media(max-width:600px) { [data-testid="wide"] { width: 500px; } }
+</style>
+<body><div id="headers"></div><div class="scroll"></div><div class="clip"></div><nav>画面外のメニュー</nav><div data-testid="wide">画面をはみ出す原因</div>
+<script>
+for (let i = 0; i < 51; i++) {
+  for (const selector of ['#headers', '.scroll', '.clip']) {
+    const element = document.createElement('div');
+    if (selector === '#headers') element.className = 'fixed';
+    element.textContent = '除外対象';
+    document.querySelector(selector).append(element);
+  }
+}
+</script></body></html>

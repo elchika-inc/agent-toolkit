@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ja"><meta charset="utf-8"><title>レイアウト検査: negative</title>
+<style>body { margin: 0; } main { width:240px; } section { height:80px; } .overlap div { height:40px; } .overlap div+div { margin-top:-20px; }
+.ellipsis { width:80px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.sr { position:absolute; width:1px; height:1px; overflow:hidden; }
+.clipped { position:absolute; width:20px; height:20px; overflow:hidden; clip-path:inset(50%); }
+.scroll { width:100px; overflow-x:auto; } .scroll > div { width:500px; }
+.badge-parent { position:relative; height:50px; } .badge { position:absolute; right:-15px; top:0; }
+.carousel { width:100px; height:35px; overflow:hidden; } .carousel > div { width:500px; white-space:nowrap; }
+header { position:fixed; top:0; width:2000px; height:40px; }
+nav { position:fixed; left:100%; width:300px; height:200px; transform:translateX(100%); }
+.clamp { width:50px; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:1; overflow:hidden; }</style>
+<body><main>
+<section class="overlap"><div>意図した重なり</div><div>同じ重なり</div></section>
+<div class="ellipsis">省略表示を意図した長い長い文章です</div>
+<div class="sr">読み上げ向けの長い文字列</div><div class="clipped">隠す文字</div>
+<div class="scroll"><div>横スクロール</div></div>
+<div class="badge-parent">容器<div class="badge">バッジ</div></div>
+<div class="carousel"><div>どの幅でもはみ出すカルーセルの中身です</div></div>
+<header>固定ヘッダー</header><nav>画面外メニュー</nav>
+<div class="clamp">行数を制限する長い長い長い長い文章です</div>
+</main></body></html>

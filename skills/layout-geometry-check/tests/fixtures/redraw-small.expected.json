@@ -1,0 +1,14 @@
+{
+  "rules": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+  ],
+  "exit": 0,
+  "findings": [],
+  "incomparable": {
+    "invisibleAtReference": 1,
+    "missingAtReference": 1
+  }
+}

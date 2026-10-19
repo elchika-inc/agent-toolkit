@@ -1,0 +1,13 @@
+{
+  "rules": [
+    "R3"
+  ],
+  "exit": 0,
+  "findings": [
+    {
+      "rule": "R3",
+      "key": "[data-testid=\"first\"] | [data-testid=\"second\"]",
+      "width": 320
+    }
+  ]
+}

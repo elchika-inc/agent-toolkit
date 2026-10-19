@@ -1,0 +1,13 @@
+{
+  "rules": [
+    "R4"
+  ],
+  "exit": 0,
+  "findings": [
+    {
+      "rule": "R4",
+      "key": "[data-testid=\"parent\"] | [data-testid=\"child\"]",
+      "width": 320
+    }
+  ]
+}

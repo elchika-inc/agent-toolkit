@@ -1,0 +1,5 @@
+<!doctype html>
+<html lang="ja"><meta charset="utf-8"><title>レイアウト検査: redraw-large</title>
+<style>body { margin: 0; } </style>
+<body><main><div>元の要素1</div><div>元の要素2</div><div>元の要素3</div></main>
+<script>addEventListener('resize', () => { if (innerWidth < 600) document.querySelector('main').innerHTML='<div>新しい要素1</div><div>新しい要素2</div><div>新しい要素3</div>'; });</script></body></html>
