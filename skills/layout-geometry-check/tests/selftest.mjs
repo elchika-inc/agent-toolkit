@@ -63,6 +63,7 @@ try {
       if (expected.atReference) assert.deepEqual(findingSet(result.info.atReference), findingSet(expected.atReference), name);
       if (expected.incomparable) assert.deepEqual(result.info.incomparable, expected.incomparable, name);
       if (expected.unscanned) assert.deepEqual(result.info.unscanned, expected.unscanned, name);
+      if (expected.r1Unverified !== undefined) assert.equal(result.info.r1Unverified, expected.r1Unverified, name);
       if (expected.checked) assert.ok(Object.values(result.checked).every((count) => count === expected.checked), `${name}: ${JSON.stringify(result.checked)}`);
       if (expected.exit === 0) assert.ok(Object.values(result.checked).every((count) => count > 0), name);
       results.set(name, result);

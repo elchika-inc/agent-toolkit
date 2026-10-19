@@ -6,5 +6,17 @@
     "R4"
   ],
   "exit": 0,
-  "findings": []
+  "findings": [],
+  "atReference": [
+    {
+      "rule": "R2",
+      "key": "body > main:nth-of-type(1) > div:nth-of-type(6)",
+      "width": 1280
+    },
+    {
+      "rule": "R3",
+      "key": "body > main:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(1) | body > main:nth-of-type(1) > section:nth-of-type(1) > div:nth-of-type(2)",
+      "width": 1280
+    }
+  ]
 }
