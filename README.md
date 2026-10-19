@@ -78,7 +78,7 @@ npx skills update -g
 
 > マーケットプレース名は既存インストールとの互換性維持のため `naoto24kawa-claude-plugins` のまま。
 
-### dev-tools (v1.18.0)
+### dev-tools (v1.19.0)
 
 開発プロセス基盤のオールインワン。
 
