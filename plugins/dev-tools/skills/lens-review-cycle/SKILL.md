@@ -1,7 +1,7 @@
 ---
 name: lens-review-cycle
 description: 'This skill should be used when the user asks to "レンズレビュー", "lens review cycle", "専門家レビュー", "expert review cycle", "5人の専門家にレビューしてもらおう", "指摘が0になるまでレビュー", "レビューサイクルを回す", "繰り返しレビュー", or the legacy phrases "parallel review cycle" / "専門家並行レビュー" — to run multiple autonomous review rounds until all findings reach zero, without between-round confirmation. One reviewer applies 5 lenses sequentially; parallel agents only when the user explicitly asks. For prose targets (CLAUDE.md, .docs/plans, SKILL.md, README, design docs), also use a 6th "Ambiguity Hunter" for underspecification and a 7th "Altitude Checker" for detail-level overfit. Triggers also: "仕様の曖昧さをチェック", "ルールの曖昧さ", "未明文化を洗い出す", "ambiguity check", "overfit チェック", "過剰実装チェック", "altitude check". 構想段階の判断訂正には product-design-lens を使う。'
-allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, Agent, mcp__code-review-graph__build_or_update_graph_tool, mcp__code-review-graph__get_minimal_context_tool]
+allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, Agent]
 ---
 
 # Lens Review Cycle
@@ -70,12 +70,6 @@ REVIEW_DIR="/tmp/review-cycle-${_wt}"
 
 `REVIEW_DIR` は symlink でなく実行ユーザー所有の mode 0700 であることを確認してから使う。同一 worktree では同時に複数サイクルを実行しない。ここへの書き込みはオーケストレータだけが行い、レビュアーのファイル書き込みや `REVIEW_DIR` へのアクセスを前提にしない。`state.md` の対象 HEAD、対象ファイル集合、content fingerprint が今回と一致すれば再開し、完了済みラウンドと有効な findings 済みロールをスキップする。不一致または `state.md` が無い残骸は `${REVIEW_DIR}-abandoned-$(date +%s)` へ退避して新規開始する。パス生成・安全検査・状態構造・再開比較は `references/durable-state.md`、FP レジストリの初期化と前回ログからの安全な carry-over は `references/fp-registry-format.md` を参照する。
 
-## ステップ 1.5: 最小コンテキストの取得（任意）
-
-レビュー対象にコードが含まれる場合だけ、全 specialist のディスパッチ前に、① `mcp__code-review-graph__build_or_update_graph_tool()`（引数なしで graph が無ければ作り、あれば増分更新）、成功したら② `mcp__code-review-graph__get_minimal_context_tool(task="review", changed_files=[レビュー対象のリポジトリ相対パス])` の順で各1回呼ぶ。②の `status` が `"ok"` なら `summary`・`risk`・`communities`・`flows_affected` を全 specialist に「まず読むべき起点（code-review-graph）」として渡すが、読む範囲の制約にはしない。`next_tool_suggestions` は渡さない。
-
-①が失敗した、②の `status` が `"ok"` でない、または MCP サーバーが未接続・呼び出しに失敗した場合は結果を使わず、理由を1行記録し、**現行のレビュー動作を継続する**。この場で `full_rebuild=true` を指定したり、レビューを停止したりしない。文章仕様のみが対象なら呼び出さない。呼び出し形式とフォールバックは `references/minimal-context-feeder.md` を参照する。
-
 ## ステップ 2: レビュアー 1 名にレンズを順に当てさせる
 
 `Agent` ツールを **1 回**呼び、適用するレンズを全部渡す。モデル指定は「実行モデル」節に従う（`model` を明示する）。Claude Code では `subagent_type: Explore` を使い、レビュアーのツールを `Read` / `Grep` / `Glob` などの読み取り専用ツールに限定する。等価な read-only reviewer type を使う環境でも、`Write` / `Edit` / 書き込み可能な `Bash` は渡さない。
@@ -129,9 +123,8 @@ role は適用順に `fresh-eyes`、`security`、`core-logic`、`tests`、`domai
 2. **修正済み事項の内容** — 重複報告を防ぐため、前ラウンドまでに修正した内容をオーケストレータが `$REVIEW_DIR/round-N/fixed-items.md` に列挙してプロンプトへ展開し、**Fresh Eyes の findings ブロックを完成させてから参照する**よう指示する（上記注意参照）
 3. **設計上の事実** — 意図的な設計判断（「これは仕様」と分かっているもの）
 4. **FP レジストリの内容** — `cat "$REVIEW_DIR/fp-registry.md"` で読み込んでプロンプトに展開
-5. **最小コンテキスト** — ステップ1.5で取得できた場合だけ、「まず読むべき起点」であり範囲制約ではないと明記して添付
-6. **role の一覧と適用順** — 対象に応じた5または7 role の識別子を上記の順で渡し、role ごとに境界付きブロックを1個返すよう明記する
-7. **報告フォーマット** — `references/specialist-roles.md` 冒頭の「全テンプレート共通の報告規定」を正本としてプロンプトへ併記する。Ambiguity Hunter / Altitude Checker の形式は各 reference に従い、ブロック外へ本文を書かせない
+5. **role の一覧と適用順** — 対象に応じた5または7 role の識別子を上記の順で渡し、role ごとに境界付きブロックを1個返すよう明記する
+6. **報告フォーマット** — `references/specialist-roles.md` 冒頭の「全テンプレート共通の報告規定」を正本としてプロンプトへ併記する。Ambiguity Hunter / Altitude Checker の形式は各 reference に従い、ブロック外へ本文を書かせない
 
 ### 確信度フィルタと scope フィルタ
 
@@ -276,7 +269,6 @@ Fresh Eyes の独立性だけは別人格に依存していたので、「最初
 - **`references/specialist-roles.md`** — 5 ロールのフォーカスエリアとプロンプトテンプレート
 - **`references/fp-registry-format.md`** — FP レジストリのエントリフォーマット・照合ルール・前回ログからの carry-over
 - **`references/durable-state.md`** — `REVIEW_DIR` の生成と安全検査・state の構造と再開判定・findings ファイルの有効性
-- **`references/minimal-context-feeder.md`** — code-review-graph の起動条件・2 段呼び出し・fail-open フォールバック
 - **`references/cycle-log-format.md`** — サイクル横断ログの形式・ファイル書込規則・最新エントリの選択
 - **`references/ambiguity-hunter.md`** — #6 Ambiguity Hunter（文章仕様の曖昧さ）の7分類・出力・明文化案・起動条件
 - **`references/altitude-checker.md`** — #7 Altitude Checker（詳細レベル overfit）の5分類・出力・移設案・#6 との裁定
