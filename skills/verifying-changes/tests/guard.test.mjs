@@ -24,6 +24,16 @@ test("# コメントのあとに mutation が来る本文 → 止める", () => 
 
 test("query A{} mutation B{} を持つ本文（operationName が A でも） → 止める", () => assert.equal(judgeRequest(request({ postData: JSON.stringify({ query: "query A{} mutation B{}", operationName: "A" }) }), policy).allow, false));
 
+test("有効な query A と mutation B が混在し operationName が A → 止める", () => {
+  const postData = JSON.stringify({ query: "query A { viewer { id } } mutation B { delete }", operationName: "A" });
+  assert.equal(judgeRequest(request({ postData }), policy).allow, false);
+});
+
+test("同じ有効な query A から mutation B を除く → 通す", () => {
+  const postData = JSON.stringify({ query: "query A { viewer { id } }", operationName: "A" });
+  assert.equal(judgeRequest(request({ postData }), policy).allow, true);
+});
+
 test("JSON の配列で 2 つめが mutation → 止める", () => assert.equal(judgeRequest(request({ postData: JSON.stringify([{ query: "query { viewer { id } }" }, { query: "mutation { delete }" }]) }), policy).allow, false));
 
 test("application/graphql の本文が mutation → 止める", () => assert.equal(judgeRequest(request({ postData: "mutation { delete }", contentType: "application/graphql" }), policy).allow, false));
