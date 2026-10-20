@@ -20,3 +20,19 @@ test("replaceBodySection: 目印がある → 目印の間だけを置き換え�
 test("replaceBodySection: 見出しが無い → null", () => assert.equal(replaceBodySection("## 別の見出し\n", "本番前の確認", "B", "内容"), null));
 
 test("extractAttachmentUrls: ![a.png](https://github.com/user-attachments/assets/<uuid>) と <img alt=\"b.png\" src=\"…\"> の両方を拾う", () => { const a = "https://github.com/user-attachments/assets/00000000-0000-0000-0000-000000000001"; const b = "https://github.com/user-attachments/assets/00000000-0000-0000-0000-000000000002"; assert.deepEqual(extractAttachmentUrls(`![a.png](${a}) <img alt="b.png" src="${b}">`), new Map([["a.png", a], ["b.png", b]])); });
+
+test("まとめと Issue に署名付き URL を渡す → 生の URL を出さず伏せる", () => {
+  for (const url of [
+    "https://private-user-images.githubusercontent.com/synthetic?jwt=synthetic",
+    "https://example.com/synthetic?X-Amz-Signature=synthetic",
+  ]) {
+    const f = finding({ title: url, actual: url });
+    const summary = renderSummary(results({ findings: [f] }), ctx);
+    const issue = renderIssue(f, ctx);
+    for (const text of [summary, issue.title, issue.body]) {
+      assert.ok(!text.includes(url));
+      assert.doesNotMatch(text, /private-user-images|X-Amz-Signature/i);
+      assert.match(text, /署名付き/);
+    }
+  }
+});

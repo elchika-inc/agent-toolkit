@@ -29,13 +29,18 @@ export async function inspectPorts(ports) {
   }
   return { ports: measured, reasons };
 }
+function validateSecretPaths(names) {
+  for (const name of names) {
+    if (!name || path.isAbsolute(name) || name.split(/[\\/]/).includes("..")) throw new ArgumentError("秘密のファイルは worktree 内の相対パスで指定");
+  }
+  return names;
+}
 export async function secretFiles(worktree, explicit = []) {
-  const { stdout } = await exec("git", ["-C", worktree, "ls-files", "-oi", "--exclude-standard", "-z"], { timeout: 10_000 });
+  const { stdout } = await exec("git", ["-C", worktree, "ls-files", "-oi", "--exclude-standard", "-z", "--", ":(glob)**/.env*", ":(glob)**/.dev.vars*"], { timeout: 10_000, maxBuffer: 8 * 1024 * 1024 });
   const automatic = stdout.split("\0").filter((name) => /^(?:\.dev\.vars|\.env)/.test(path.basename(name)));
   const names = [...new Set([...automatic, ...explicit])].sort();
   const records = [];
-  for (const name of names) {
-    if (path.isAbsolute(name) || name.split(/[\\/]/).includes("..")) throw new ArgumentError("秘密のファイルは worktree 内の相対パスで指定");
+  for (const name of validateSecretPaths(names)) {
     try {
       const content = await fs.readFile(path.join(worktree, name));
       records.push({ path: name, exists: true, sha256: createHash("sha256").update(content).digest("hex") });
@@ -67,7 +72,8 @@ export async function main(argv = process.argv.slice(2)) {
     const options = parseOptions(argv, { worktree: "string", "expect-sha": "string", ports: "string", "secret-files": "string", out: "string" });
     requireOptions(options, ["worktree", "expect-sha", "ports", "out"]);
     if (!/^[0-9a-f]{40}$/.test(options["expect-sha"])) throw new ArgumentError("40 桁の SHA が必要");
-    const result = await inspect(path.resolve(options.worktree), options["expect-sha"], parsePorts(options.ports), options["secret-files"]?.split(",") ?? []);
+    const secrets = validateSecretPaths(options["secret-files"]?.split(",") ?? []);
+    const result = await inspect(path.resolve(options.worktree), options["expect-sha"], parsePorts(options.ports), secrets);
     await writeJson(path.resolve(options.out), result);
     console.log(`点検: ${result.ok ? "通過" : "未通過"}`);
     return result.ok ? 0 : 1;

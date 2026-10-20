@@ -66,3 +66,49 @@ test("--na → まとめに N/A（理由）・Issue の操作なし", async (t) 
 test("results.json が不正 → GitHub を 1 回も呼ばずに exit 1", async (t) => {
   const p = await setup(t, r => { delete r.findings[0].headRuns; }); assert.equal((await p.run()).code, 1); assert.equal((await p.read("state.json")).calls?.length ?? 0, 0);
 });
+
+test("まとめの作成失敗後に再開 → 本文を未完了として再編集しまとめのリンクを残す", async (t) => {
+  const p = await setup(t, (r, state) => {
+    state.failSummary = true;
+    r.kind = "B"; r.includedPrs = []; r.findings[0].candidatePrs = [];
+  });
+  assert.equal((await p.run(["--write"])).code, 1);
+  assert.match((await p.read("state.json")).prBody, /まとめ: （未投稿）/);
+  assert.equal((await p.read("published.json")).bodyEdited, false);
+  const state = await p.read("state.json");
+  state.failSummary = false;
+  await fs.writeFile(p.stateFile, JSON.stringify(state));
+  assert.equal((await p.run(["--write"])).code, 0);
+  const published = await p.read("published.json");
+  assert.equal(published.bodyEdited, true);
+  assert.match((await p.read("state.json")).prBody, new RegExp(`#issuecomment-${published.summaryCommentId}`));
+  assert.doesNotMatch((await p.read("state.json")).prBody, /未投稿/);
+});
+
+test("結果に署名付き URL がある → GitHub を呼ばずに exit 1", async (t) => {
+  for (const url of [
+    "https://private-user-images.githubusercontent.com/synthetic?jwt=synthetic",
+    "https://example.com/synthetic?X-Amz-Signature=synthetic",
+  ]) {
+    const p = await setup(t, r => { r.findings[0].actual = url; });
+    const execution = await p.run(["--write"]);
+    assert.equal(execution.code, 1);
+    assert.equal((await p.read("state.json")).calls?.length ?? 0, 0);
+    assert.ok(!execution.stderr.includes(url));
+  }
+});
+
+test("再開時の実測で判定が変わる → 本文の判定も最新のまとめと一致する", async (t) => {
+  const p = await setup(t, (r, state, m) => {
+    r.kind = "B"; r.includedPrs = []; r.findings[0].candidatePrs = [];
+    m.preflight.head = "c".repeat(40);
+  });
+  assert.equal((await p.run(["--write"])).code, 0);
+  assert.match((await p.read("state.json")).prBody, /判定できない/);
+  await fs.writeFile(path.join(p.dir, "preflight.json"), JSON.stringify(measured().preflight));
+  assert.equal((await p.run(["--write"])).code, 0);
+  const state = await p.read("state.json");
+  assert.match(state.prBody, /判定: 承認してよい/);
+  assert.doesNotMatch(state.prBody, /判定できない/);
+  assert.match(state.comments.find(c => c.body.startsWith("<!-- verifying-changes:summary")).body, /判定: 承認してよい/);
+});

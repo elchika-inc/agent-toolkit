@@ -58,6 +58,15 @@ async function publish(options) {
     const match = comment.body?.split("\n")[0].match(/^<!-- verifying-changes:evidence run=([\w-]+) part=(\d+) -->$/);
     if (match?.[1] === results.runId && !published.evidence.some((item) => item.part === Number(match[2]))) published.evidence.push({ part: Number(match[2]), commentId: comment.id, urls: Object.fromEntries(extractAttachmentUrls(comment.body)) });
   }
+  const bodyContent = () => {
+    const link = published.summaryCommentId ? `https://github.com/${results.repo}/pull/${results.pr}#issuecomment-${published.summaryCommentId}` : "（未投稿）";
+    return `対象 SHA: ${results.targetSha}\n判定: ${options.na ? `N/A（${options.na}）` : verdictLabel(results.kind, verdict.verdict)}\nまとめ: ${link}`;
+  };
+  if (results.kind !== "A" && published.bodyEdited) {
+    const heading = results.kind === "B" ? "本番前の確認" : "本番に出た後の確認";
+    const expected = replaceBodySection(remote.prBody ?? "", heading, results.kind, bodyContent());
+    if (expected !== remote.prBody) published.bodyEdited = false;
+  }
   const operations = planOperations(results, verdict, remote, published);
   await writeJson(path.join(dir, "planned-operations.json"), operations);
   const errors = [];
@@ -74,9 +83,7 @@ async function publish(options) {
       else if (op.op === "create-evidence") body = renderEvidenceBody(results.runId, op.part);
       else if (op.op.endsWith("issue")) ({ body, title } = renderIssue(op.finding, { ...context(), ...op }));
       else if (op.op === "edit-body") {
-        const link = published.summaryCommentId ? `https://github.com/${results.repo}/pull/${results.pr}#issuecomment-${published.summaryCommentId}` : "（未投稿）";
-        const content = `対象 SHA: ${results.targetSha}\n判定: ${options.na ? `N/A（${options.na}）` : verdictLabel(results.kind, verdict.verdict)}\nまとめ: ${link}`;
-        body = replaceBodySection(remote.prBody ?? "", op.target, results.kind, content);
+        body = replaceBodySection(remote.prBody ?? "", op.target, results.kind, bodyContent());
         if (body === null) throw new Error("昇格 PR の見出しまたは目印が無い・不正");
       }
       if (body) await fs.writeFile(file, body, { mode: 0o600 });
@@ -117,7 +124,7 @@ async function publish(options) {
         published.summaryCommentId = op.commentId;
       } else if (op.op === "edit-body") {
         await gh.write(["pr", "edit", String(results.pr), ...repo, "--body-file", file]);
-        published.bodyEdited = true;
+        published.bodyEdited = Boolean(published.summaryCommentId);
       }
       await writeJson(publishedFile, published);
     } catch (error) {
