@@ -27,13 +27,15 @@
 | 条件 | 動作 |
 |---|---|
 | URL が読めない・HTTP(S) 以外・認証情報あり・許可外 host | 停止 |
-| GET・HEAD・OPTIONS | 許可。ただし GET の query パラメーターが GraphQL の読み取りと確認できなければ停止 |
+| GET・HEAD・OPTIONS | 許可。ただし query パラメーターの値のどれかに mutation・subscription の語があれば停止 |
 | その他の method | 宣言の method と URL の前方一致がなければ停止 |
 | 宣言された通信の本文 | GraphQL query と確認できたときだけ許可 |
 
 URL の前方一致は、次の文字が `/`・`?`・終端の場合だけ。`POST:https://api.example.com/graphql` は `/graphql-admin` を許可しない。
 
-JSON の query、JSON 配列の各 query、`application/graphql` の本文を読む。すべてが読み取りでなければ停止する。mutation・subscription は許可しない。コメントの後の mutation、query と mutation の混在も停止する。operationName が query を指しても、本文に mutation があれば停止する。query の無い persisted query・不正な JSON・空の配列・解析できない文法も停止する。
+GET・HEAD・OPTIONS は、すべての query の値を URLSearchParams で 1 回デコードし、`\b(mutation|subscription)\b`（大文字・小文字を区別しない）で調べる。GraphQL として解析できるかは問わない。普通の検索値 `shoes` や `{ a }` は通し、不正な文法でも該当する語があれば止める。GraphQL の mutation・subscription は操作の種類の語を省略できず、省略した `{ … }` は query になるためである。文字列・コメント・普通の検索語に該当の語があるだけでも、止める側の誤りとして停止する。
+
+GET・HEAD・OPTIONS 以外では、JSON の query、JSON 配列の各 query、`application/graphql` の本文を読む。すべてが読み取りでなければ停止する。mutation・subscription は許可しない。コメントの後の mutation、query と mutation の混在も停止する。operationName が query を指しても、本文に mutation があれば停止する。query の無い persisted query・不正な JSON・空の配列・解析できない文法も停止する。
 
 Node 組み込みには GraphQL の構文解析が無く、この skill は外部依存を持たないため、読み取りの文法を限定して受理する。文字列やコメント中の単語を operation と混同しない。本文は 131072 文字、構文の深さは 100 を上限にする。
 

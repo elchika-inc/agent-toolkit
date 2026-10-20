@@ -10,6 +10,33 @@ test("GET・HEAD・OPTIONS → 通す", () => { for (const method of ["GET", "HE
 
 test("GET の ?query=mutation… → 止める", () => assert.equal(judgeRequest(request({ method: "GET", url: "https://api.example.com/graphql?query=mutation%20%7Bdelete%7D" }), policy).allow, false));
 
+test("GET の ?query=shoes → 通す", () => {
+  assert.equal(judgeRequest(request({ method: "GET", url: "https://api.example.com/search?query=shoes" }), policy).allow, true);
+});
+
+test("GET の ?query={ a }（読み取りの GraphQL） → 通す", () => {
+  assert.equal(judgeRequest(request({ method: "GET", url: "https://api.example.com/graphql?query=%7B%20a%20%7D" }), policy).allow, true);
+});
+
+test("GET の ?query= が GraphQL として読めず mutation の語を含む → 止める", () => {
+  assert.equal(judgeRequest(request({ method: "GET", url: "https://api.example.com/search?query=broken%20mutation%20%3F%3F%3F" }), policy).allow, false);
+});
+
+test("GET で query が 2 つあり、2 つめが subscription → 止める", () => {
+  assert.equal(judgeRequest(request({ method: "GET", url: "https://api.example.com/graphql?query=%7Ba%7D&query=subscription%20%7Bnews%7D" }), policy).allow, false);
+});
+
+test("GET の ?query=MUTATION{…}（大文字） → 止める", () => {
+  assert.equal(judgeRequest(request({ method: "GET", url: "https://api.example.com/graphql?query=MUTATION%7Bdelete%7D" }), policy).allow, false);
+});
+
+test("HEAD・OPTIONS の query に操作の語 → 止め、検索語だけなら通す", () => {
+  for (const method of ["HEAD", "OPTIONS"]) {
+    assert.equal(judgeRequest(request({ method, url: "https://api.example.com/graphql?query=mutation%20%7Bdelete%7D" }), policy).allow, false);
+    assert.equal(judgeRequest(request({ method, url: "https://api.example.com/search?query=shoes" }), policy).allow, true);
+  }
+});
+
 test("POST で許可なし → 止める", () => assert.equal(judgeRequest(request(), { ...policy, allowWrites: [] }).allow, false));
 
 test("POST:https://api.example.com/graphql の許可がある GraphQL の query → 通す", () => assert.equal(judgeRequest(request(), policy).allow, true));

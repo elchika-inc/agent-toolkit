@@ -91,7 +91,7 @@ export function judgeRequest({ method, url, postData, contentType }, policy) {
 
   const verb = String(method).toUpperCase();
   if (["GET", "HEAD", "OPTIONS"].includes(verb)) {
-    if (verb === "GET" && parsed.searchParams.getAll("query").some((query) => !readOnlyQuery(query))) return deny("GET の GraphQL を読み取りと確認できない");
+    if (parsed.searchParams.getAll("query").some((query) => /\b(mutation|subscription)\b/i.test(query))) return deny("URL の query に mutation または subscription の語がある");
     return allow();
   }
   const permitted = policy.allowWrites.some((entry) => {
