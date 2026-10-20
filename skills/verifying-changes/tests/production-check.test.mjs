@@ -57,7 +57,17 @@ async function setup(t, fixture = "normal") {
 }
 
 test("bare リポジトリの production が --expect-sha と違う → exit 1・deployCheck.ok false・試験のサーバーへの到達は 0 件", async (t) => {
-  const p = await setup(t); const r = await p.run(["--expect-sha", "e".repeat(40)]); assert.equal(r.code, 1); assert.equal(r.log.deployCheck.ok, false); assert.equal(p.requests.length, 0);
+  const p = await setup(t);
+  await p.git("-c", "user.name=試験", "-c", "user.email=test@example.invalid", "commit", "--allow-empty", "-m", "別の合成 commit");
+  const otherSha = (await p.git("rev-parse", "HEAD")).stdout.trim();
+  await p.git("push", path.join(p.dir, "remote.git"), "HEAD:refs/heads/production");
+  const r = await p.run();
+  assert.equal(r.log.deployCheck.productionSha, otherSha);
+  assert.equal(r.log.deployCheck.deployHeadSha, p.sha);
+  assert.notEqual(otherSha, p.sha);
+  assert.equal(r.code, 1);
+  assert.equal(r.log.deployCheck.ok, false);
+  assert.equal(p.requests.length, 0);
 });
 
 test("fake-gh の headSha が --expect-sha と違う → exit 1・試験のサーバーへの到達は 0 件", async (t) => {
