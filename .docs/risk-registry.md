@@ -50,4 +50,21 @@
 - **Why accepted**: `.mcp.json` の起動コマンドはプラグイン利用者のマシンで `npm install --include=dev --silent` を実行する。pnpm への移行は利用者へ pnpm の導入を要求し、配布物を起動できない環境を生むため、npm を継続する。lockfile のコミットという MUST は `package-lock.json` で満たしている。
 - **Mitigation**: `package-lock.json` を維持し、開発・CI では `npm ci` で依存を再現する。
 - **anchor**: 人間の PR レビュアーが `plugins/elchika-tools/.mcp.json` の差分を確認し、起動コマンドが `npm install` 以外へ変わったことを検知する。その変更で pnpm 導入を阻む前提が消えた場合、この受容を再評価する。
-- **Reconciled**: 2026-09-10 `81ed983ac7ecd4606e5454618cb62743444442fb` の `.mcp.json` と `package-lock.json` を照合。
+- **Reconciled**: 2026-10-20 `08ca812f034fb3e79aeb0b8bdd82a307eb80aa90` の `.mcp.json` と `package-lock.json` を照合（起動コマンドは `npm install --include=dev --silent` のまま。`package-lock.json` はある）。
+
+---
+
+## RISK-003: lens-review-cycle の偽陽性の基準で、最後に直した箇条書きを再レビューしていない
+
+- **Status**: accepted
+- **Date**: 2026-10-20
+- **Confidence**: 100%
+- **Discovered**: PR #87（lens-review-cycle の偽陽性の判定基準の直し）のレビューサイクル。上限の第 3 ラウンドに出た flag（Ambiguity Hunter: 前提が成り立ったと言える実測の環境・範囲・時点が定義されていない）を直した修正は、上限に達したため再レビューしていない。レビュー記録は `.docs/reviews/cycles/2026-10-20-fp-spec-harm.md` の ACCEPTED_RISKS。
+- **Location**: `skills/lens-review-cycle/SKILL.md` と同期コピー `plugins/dev-tools/skills/lens-review-cycle/SKILL.md` の、「仕様どおりに動くと害が出る」指摘の扱いのうち、「成り立つと確かめられたときだけ、偽陽性にする。」で始まる箇条書き。main には PR #87 のマージコミット `1de88c3fe762827abcf5252104b4c6e16959c6d9` で入った。
+- **Description**: この箇条書きは、偽陽性にしてよい「確かめられた」を、(a) 前提が仕様やコードの仕組みで保証されているときと、(b) 害が出る側の環境で測れたときに限り、レビューする側の checkout だけを見て成り立つとしない、と定める。文言はオーケストレータが決め、blob と検索で反映を確かめた。文言の曖昧さと、ほかの手順（継続判定・FP レジストリ・判断レンズへの差し戻し）との噛み合いは、レビューで確かめていない。
+- **Why accepted**: 変更は 1 つの箇条書きの置き換えに限られ、直した flag（実測の範囲が定義されていない）に文言が直接答えている。上限を超えてラウンドを足すより、この基準が実際に使われたときの記録を人間が読む経路（anchor）で検知するほうが安い。
+- **Mitigation**: 反映は、オーケストレータが origin/main から別に作った想定との blob の一致（`b7854c69e0ee9a4de90168d5eba037c813606a9f`）と、正本と同期コピーの tree の一致で確かめた。
+- **リスクが顕在化する条件**: lens-review-cycle を使うサイクルで、オーケストレータがこの箇条書きを読み違え、レビューする側の checkout だけを根拠に「仕様どおりに動くと害が出る」指摘を偽陽性にする。または、仕組みで保証された前提への指摘まで判断レンズへ差し戻す。
+- **anchor**: lens-review-cycle を使った PR の diff に載る完了ログ（`.docs/reviews/cycles/<cycle-id>.md`）の「確定した偽陽性」の理由と「判断レンズへの差し戻し」を、マージを承認する人間が読む。理由が (a)・(b) のどちらにも当たらない偽陽性、または保証された前提を差し戻した指摘が見つかったら、この受容は破れている。
+- **Follow-up**: 次に `skills/lens-review-cycle/SKILL.md` を変える PR のレビューで、この箇条書きもレビューの対象に含める。flag が 0 なら `resolved` にする。
+- **Reconciled**: 2026-10-20 `08ca812f034fb3e79aeb0b8bdd82a307eb80aa90` の `skills/lens-review-cycle/SKILL.md` を照合（「成り立つと確かめられたときだけ、偽陽性にする。」で始まる箇条書きが、正本と同期コピーに 1 つずつある）。
