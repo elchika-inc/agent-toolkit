@@ -349,3 +349,22 @@ test("C で production-observation だけ → approve", () => {
   assert.equal(decision.verdict, "approve");
   assert.ok(Array.isArray(decision.reasons));
 });
+
+for (const category of ["environment", "declaration"]) {
+  test(`点検を通過し ${category} の分類だけがある → approve`, () => {
+    const r = results();
+    r.findings = [f({ category, head: null, base: null })];
+    assert.deepEqual(decideVerdict(r, measured()), { verdict: "approve", reasons: [] });
+  });
+}
+
+test("regression と production-failure → 日本語の判定理由が残る", () => {
+  for (const kind of ["A", "C"]) {
+    const r = results();
+    r.kind = kind;
+    r.findings = [f({ symptom: "expectation", ...(kind === "C" ? { base: null, target: "widgets" } : {}) })];
+    const decision = decideVerdict(r, measured());
+    assert.equal(decision.verdict, "reject");
+    assert.match(decision.reasons[0], /[\u3040-\u30ff\u4e00-\u9fff]/);
+  }
+});

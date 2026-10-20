@@ -17,8 +17,9 @@ export function decideVerdict(results, measured) {
   const unknown = [];
   for (const finding of results.findings) {
     const classification = classifyFinding(finding, results.kind);
-    if (["regression", "production-failure"].includes(classification)) rejected.push(`${finding.id}: ${classification}`);
-    if (["incomplete", "regression-flaky", "environment", "declaration"].includes(classification)) unknown.push(`${finding.id}: ${classification} のため判定できない`);
+    if (classification === "regression") rejected.push(`${finding.id}: 今回の変更で毎回再現する問題`);
+    if (classification === "production-failure") rejected.push(`${finding.id}: 本番で期待との違い・console・通信の失敗を再現`);
+    if (["incomplete", "regression-flaky"].includes(classification)) unknown.push(`${finding.id}: ${classification} のため判定できない`);
   }
   for (const fix of results.fixChecks) {
     if (fix.headRuns?.tried !== 3 || fix.baseRuns?.tried !== 3) {
