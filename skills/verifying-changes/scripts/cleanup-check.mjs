@@ -1,20 +1,10 @@
 import fs from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
 import { inspect, parsePorts } from "./preflight.mjs";
 import { parseOptions, requireOptions, ArgumentError, writeJson, isMain } from "./lib/io.mjs";
 
-async function browserClosed(session) {
-  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "verifying-changes-sessions-"));
-  try {
-    const { stdout, stderr } = await promisify(execFile)("playwright-cli", ["list", "--all"], { cwd: dir, timeout: 15_000 });
-    if (stderr.trim() || /^### Error/m.test(stdout)) return false;
-    return !stdout.includes(session);
-  } catch { return false; }
-  finally { await fs.rm(dir, { recursive: true, force: true }); }
-}
+import { listSessions } from "./lib/sessions.mjs";
+
 export async function main(argv = process.argv.slice(2)) {
   try {
     const options = parseOptions(argv, { preflight: "string", ports: "string", session: "string", out: "string" });
@@ -28,7 +18,7 @@ export async function main(argv = process.argv.slice(2)) {
       worktreeClean: after.clean,
       secretHashesUnchanged: JSON.stringify(after.secretFiles) === JSON.stringify(before.secretFiles),
       portsReleased: after.ports.every((port) => port.listening === false),
-      browserClosed: options.session ? await browserClosed(options.session) : null,
+      browserClosed: options.session ? !(await listSessions(options.session)).includes(options.session) : null,
       ok: false,
     };
     result.ok = after.ok && Object.entries(result).filter(([key]) => key !== "ok").every(([, value]) => value !== false);

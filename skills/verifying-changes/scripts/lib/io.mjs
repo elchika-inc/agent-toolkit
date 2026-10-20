@@ -37,5 +37,5 @@ export function requireOptions(options, names) {
   for (const name of names) if (!options[name]) throw new ArgumentError(`--${name} は必須`);
 }
 export function redact(text) {
-  return String(text).replace(/https?:\/\/[^\s<>"']*(?:private-user-images\.githubusercontent\.com|X-Amz-Signature=)[^\s<>"']*/gi, "[署名付き URL を削除]");
+  return String(text).replace(/[^\s<>"']*(?:private-user-images\.githubusercontent\.com|X-Amz-Signature=)[^\s<>"']*/gi, "[署名付き URL を削除]");
 }

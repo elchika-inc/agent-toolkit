@@ -30,7 +30,7 @@ if (write && state.failSummary && args[0] === "pr" && args[1] === "comment" && !
 else if (args[0] === "issue" && args[1] === "list") output = JSON.stringify(state.issues);
 else if (args[0] === "label" && args[1] === "list") output = JSON.stringify(state.labels.map((name) => ({ name })));
 else if (args[0] === "pr" && args[1] === "view") output = JSON.stringify(value("--json") === "body" ? { body: state.prBody } : state.pr);
-else if (args[0] === "run" && args[1] === "list") output = JSON.stringify(state.runs ?? []);
+else if (args[0] === "run" && args[1] === "list") output = JSON.stringify((state.runs ?? []).map(({ headSha }) => ({ headSha })));
 else if (args[0] === "label" && args[1] === "create") state.labels.push(args[2]);
 else if (args[0] === "pr" && args[1] === "comment") {
   let body = await bodyFile();
