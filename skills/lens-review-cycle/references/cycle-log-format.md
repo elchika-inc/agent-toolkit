@@ -16,10 +16,12 @@
 - **レンズ別 flag 件数**: Security {n} / Core Logic {n} / Tests {n} / Domain {n} / Fresh Eyes {n} / Ambiguity {n|-} / Altitude {n|-}
 - **確定した偽陽性**:
   - `{対象パスの JSON 配列 or N/A}` — {主張の概要} — {理由の要約}
+- **判断レンズへの差し戻し**:
+  - {指摘の概要} — {差し戻した理由}
 <!-- review-cycle:end {cycle-id} -->
 ```
 
-偽陽性が0件の場合は `- なし` と記録する。文章仕様を含まず #6 / #7 を起動しなかった場合は、それぞれの件数を `-` とする。
+偽陽性が0件の場合は `- なし` と記録する。判断レンズへの差し戻しも、0件なら同じく `- なし` と記録する。文章仕様を含まず #6 / #7 を起動しなかった場合は、それぞれの件数を `-` とする。
 
 ## パスの安全性
 
@@ -34,7 +36,7 @@ carry-over の読み取りでは、新方式と legacy の両方で `.docs` か�
 1. `state.md` を `terminal-pending` にし、cycle ID を確定する。
 2. `git rev-parse HEAD` で対象 HEAD を取得する。
 3. 全ラウンドの findings ファイルを集計し、各レンズの flag 件数を数える。
-4. `fp-registry.md` から確定した偽陽性の対象 JSON、主張、理由を省略・再解釈せず転記する。
+4. `fp-registry.md` から確定した偽陽性の対象 JSON、主張、理由を省略・再解釈せず転記する。判断レンズへの差し戻しは、`state.md` に記録した指摘を、概要と差し戻した理由とともに書く。
 5. `.docs/reviews/cycles/` を作り、書込先を `.docs/reviews/cycles/<cycle-id>.md` とする。同じ cycle ID の完全な start / end marker を持つファイルが既にあれば一時ファイルを作らず手順8へ進む。対象ファイルに start marker だけがあるなど不完全な場合は fail-closed で停止する。
 6. 書込先が無ければ、完全なエントリを同ディレクトリ内の排他的に作成した `.<cycle-id>.tmp-*` へ書いて、start / end marker と cycle ID を検証する。一時ファイルは carry-over の候補になる `.md` と区別する。
 7. 書込先が無いことを再確認し、検証済みの一時ファイルを `.docs/reviews/cycles/<cycle-id>.md` へ rename する。再確認時に書込先が存在した場合は手順5と同じ完全性判定を行う。
