@@ -1,0 +1,68 @@
+{
+  "schema": "verifying-changes/results-v1",
+  "kind": "A",
+  "repo": "example/widget",
+  "pr": 17,
+  "targetSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "baseSha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "runId": "20261020-101500-A-17",
+  "taskId": "task_example",
+  "startedAt": "2026-10-20T01:15:00Z",
+  "finishedAt": "2026-10-20T01:16:00Z",
+  "checkTypes": [
+    "browser"
+  ],
+  "environment": {
+    "urls": [
+      "http://127.0.0.1:3000"
+    ],
+    "tools": [
+      "playwright-cli 0.1.22"
+    ],
+    "viewport": "1440x1000"
+  },
+  "timedOut": false,
+  "aborted": null,
+  "matrix": [
+    {
+      "surface": "/widgets",
+      "successCriterion": true,
+      "cells": {
+        "light": "pass",
+        "dark": "pass",
+        "console": "pass",
+        "a11y": "pass",
+        "keyboard": "pass"
+      },
+      "skipReason": null,
+      "evidence": []
+    }
+  ],
+  "fixChecks": [],
+  "findings": [
+    {
+      "id": "F1",
+      "title": "合成した表示の問題",
+      "category": "product",
+      "surface": "/widgets",
+      "symptom": "layout",
+      "key": "見出しが重なる",
+      "severity": "medium",
+      "steps": [
+        "画面を開く"
+      ],
+      "expected": "重ならない",
+      "actual": "重なる",
+      "evidence": [],
+      "headRuns": {
+        "tried": 3,
+        "occurred": 0
+      },
+      "baseRuns": null
+    }
+  ],
+  "unverified": [],
+  "cleanup": {
+    "browserClosed": true
+  }
+}
