@@ -55,6 +55,7 @@ $REVIEW_DIR/
 - cycle ID と phase（`active` / `paused` / `terminal-pending` / `log-appended`）
 - worktree の絶対パスと、対象ファイルごとの content fingerprint
 - 修正事項ごとの状態（`pending` / `applied`）
+- 判断レンズへの差し戻しにした指摘ごとの概要と理由（SKILL.md のステップ 4。継続判定で数えないため、再開しても失わないように残す）
 - ラウンドごと・ロールごとの reviewer 試行回数（0 / 1 / 2）、書き込み試行回数（0 / 1 / 2）、結果状態（pending / response-received / findings-persisted / failed）
 
 `paused` は specialist の再試行失敗、findings の書き込み失敗、またはユーザー中断で意図的に保持した状態を指し、cycle ファイルへの書込も cleanup も行わない。これによりクラッシュで `active` のまま残った状態と区別できる。`terminal-pending` / `log-appended` は終了処理の checkpoint であり、前者は cycle ファイルの書込前、後者は `.docs/reviews/cycles/<cycle-id>.md` の完全性を読み返して確認した後を表す。
