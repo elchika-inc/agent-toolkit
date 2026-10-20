@@ -51,6 +51,7 @@ npx skills add elchika-inc/agent-toolkit -g
 | `standards-templates-drift` | standards ↔ templates の相互参照（パス・節番号）の実在検査 |
 | `standards-refactor` | 指定範囲の既存コードを、振る舞いをテストで固定してから standards `CODING.md` に沿って書き直す |
 | `documenting-verification` | 動作検証の実行と再現可能な検証資料の作成 |
+| `verifying-changes` | PR・昇格 PR・本番デプロイ後の動作確認と、結果の分類・判定・GitHub への記録 |
 | `layout-geometry-check` | 複数の画面幅で要素の座標を測り、はみ出し・文字切れ・重なりの候補と基準線との差分を検査する |
 | `delegation-spec` | worker へ渡す委任仕様の必須7節と検証チェックリスト |
 | `dreaming` | ルール文書の棚卸し（肥大化・陳腐化・overfit の剪定） |
