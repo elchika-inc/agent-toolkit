@@ -22,7 +22,7 @@
     {
       "name": "elchika-tools",
       "description": "Local MCP server exposing 34 Elchika Tools utilities. Text transform, encode/decode, format, crypto, and generate tools — all running locally, no data leaves your machine.",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": {
         "name": "naoto24kawa",
         "email": "naoto24kawa@gmail.com"
